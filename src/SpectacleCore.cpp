@@ -589,7 +589,7 @@ void SpectacleCore::onScreenshotUpdated(const QPixmap &thePixmap)
         }
 
         // if we don't have a Gui already opened, Q_EMIT allDone
-        if (isGuiNull()) {
+        if (m_startMode == StartMode::Background || isGuiNull()) {
             // if we notify, we Q_EMIT allDone only if the user either dismissed the notification or pressed
             // the "Open" button, otherwise the app closes before it can react to it.
             if (!m_notify && m_copyImageToClipboard) {
@@ -671,6 +671,9 @@ static QVector<KNotification *> notifications;
 
 void SpectacleCore::doNotify(const QUrl &theSavedAt)
 {
+    if (!m_notify) {
+        return;
+    }
     // ensure program stays alive until the notification finishes.
     if (!m_eventLoopLocker) {
         m_eventLoopLocker = std::make_unique<QEventLoopLocker>();
